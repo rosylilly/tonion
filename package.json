@@ -1,0 +1,31 @@
+{
+  "name": "tonion",
+  "version": "0.0.1",
+  "description": "Web application framework for TypeScript",
+  "main": "dist/index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/rosylilly/tonion.git"
+  },
+  "keywords": [
+    "http",
+    "web",
+    "framework",
+    "typescript"
+  ],
+  "author": "Sho Kusano",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/rosylilly/tonion/issues"
+  },
+  "homepage": "https://github.com/rosylilly/tonion#readme",
+  "devDependencies": {
+    "@types/node": "^10.12.1",
+    "ts-node": "^7.0.1",
+    "tslint": "^5.11.0",
+    "typescript": "^3.1.4"
+  }
+}
