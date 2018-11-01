@@ -15,12 +15,16 @@ export class Response implements ServerResponse {
     this.body = Buffer.from("");
   }
 
+  public get(key: string): number | string | string[] | undefined {
+    return this.getHeader(key);
+  }
+
   public set(key: string, value: number | string | string[]) {
-    this.original.setHeader(key, value);
+    this.setHeader(key, value);
   }
 
   public remove(key: string) {
-    this.original.removeHeader(key);
+    this.removeHeader(key);
   }
 
   public send(status: number, body: string, headers?: Header): void;
@@ -44,7 +48,7 @@ export class Response implements ServerResponse {
       this.set("Content-Length", body.length);
     }
 
-    this.original.write(body);
+    this.write(body);
   }
 
   // Server Response
