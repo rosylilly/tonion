@@ -88,6 +88,7 @@ export class Application implements RouteDelegate {
 
     this.composedHandler.call(context, this.notFound);
   }
+
   public getConnections(): Promise<number> {
     return new Promise<number>((resolve, reject) => {
      this.server.getConnections((error, count) => {
