@@ -1,13 +1,13 @@
 import { ServerResponse, OutgoingHttpHeaders } from "http";
 import { Header } from "./header";
 import { Socket } from "net";
+import { Readable } from "stream";
 
 type CallbackHandler = () => void;
 type ErrorHandler = (error: Error | null | undefined) => void;
 
 export class Response implements ServerResponse {
   public original: ServerResponse;
-
   public body: Buffer;
 
   constructor(original: ServerResponse) {
@@ -48,7 +48,6 @@ export class Response implements ServerResponse {
   }
 
   // Server Response
-
   public get statusCode(): number { return this.original.statusCode; }
   public set statusCode(val: number) { this.original.statusCode = val; }
   public get statusMessage(): string { return this.original.statusMessage; }
@@ -59,7 +58,6 @@ export class Response implements ServerResponse {
   public writeContinue(cb?: CallbackHandler) { this.original.writeContinue(cb); }
 
   // Writable Stream
-
   public get writable(): boolean { return this.original.writable; }
   public get writableHighWaterMark(): number { return this.original.writableHighWaterMark; }
   public get writableLength(): number { return this.original.writableLength; }
@@ -140,30 +138,72 @@ export class Response implements ServerResponse {
   }
 
   // Event Emitter
+  public addListener(event: "close", listener: () => void): this;
+  public addListener(event: "drain", listener: () => void): this;
+  public addListener(event: "error", listener: (err: Error) => void): this;
+  public addListener(event: "finish", listener: () => void): this;
+  public addListener(event: "pipe", listener: (src: Readable) => void): this;
+  public addListener(event: "unpipe", listener: (src: Readable) => void): this;
   public addListener(event: string | symbol, listener: (...args: any[]) => void): this {
     this.original.addListener(event, listener);
     return this;
   }
+  public on(event: "close", listener: () => void): this;
+  public on(event: "drain", listener: () => void): this;
+  public on(event: "error", listener: (err: Error) => void): this;
+  public on(event: "finish", listener: () => void): this;
+  public on(event: "pipe", listener: (src: Readable) => void): this;
+  public on(event: "unpipe", listener: (src: Readable) => void): this;
   public on(event: string | symbol, listener: (...args: any[]) => void): this {
     this.original.on(event, listener);
     return this;
   }
+  public once(event: "close", listener: () => void): this;
+  public once(event: "drain", listener: () => void): this;
+  public once(event: "error", listener: (err: Error) => void): this;
+  public once(event: "finish", listener: () => void): this;
+  public once(event: "pipe", listener: (src: Readable) => void): this;
+  public once(event: "unpipe", listener: (src: Readable) => void): this;
   public once(event: string | symbol, listener: (...args: any[]) => void): this {
     this.original.once(event, listener);
     return this;
   }
+  public prependListener(event: "close", listener: () => void): this;
+  public prependListener(event: "drain", listener: () => void): this;
+  public prependListener(event: "error", listener: (err: Error) => void): this;
+  public prependListener(event: "finish", listener: () => void): this;
+  public prependListener(event: "pipe", listener: (src: Readable) => void): this;
+  public prependListener(event: "unpipe", listener: (src: Readable) => void): this;
   public prependListener(event: string | symbol, listener: (...args: any[]) => void): this {
     this.original.prependListener(event, listener);
     return this;
   }
+  public prependOnceListener(event: "close", listener: () => void): this;
+  public prependOnceListener(event: "drain", listener: () => void): this;
+  public prependOnceListener(event: "error", listener: (err: Error) => void): this;
+  public prependOnceListener(event: "finish", listener: () => void): this;
+  public prependOnceListener(event: "pipe", listener: (src: Readable) => void): this;
+  public prependOnceListener(event: "unpipe", listener: (src: Readable) => void): this;
   public prependOnceListener(event: string | symbol, listener: (...args: any[]) => void): this {
     this.original.prependOnceListener(event, listener);
     return this;
   }
+  public removeListener(event: "close", listener: () => void): this;
+  public removeListener(event: "drain", listener: () => void): this;
+  public removeListener(event: "error", listener: (err: Error) => void): this;
+  public removeListener(event: "finish", listener: () => void): this;
+  public removeListener(event: "pipe", listener: (src: Readable) => void): this;
+  public removeListener(event: "unpipe", listener: (src: Readable) => void): this;
   public removeListener(event: string | symbol, listener: (...args: any[]) => void): this {
     this.original.removeListener(event, listener);
     return this;
   }
+  public off(event: "close", listener: () => void): this;
+  public off(event: "drain", listener: () => void): this;
+  public off(event: "error", listener: (err: Error) => void): this;
+  public off(event: "finish", listener: () => void): this;
+  public off(event: "pipe", listener: (src: Readable) => void): this;
+  public off(event: "unpipe", listener: (src: Readable) => void): this;
   public off(event: string | symbol, listener: (...args: any[]) => void): this {
     this.original.off(event, listener);
     return this;
@@ -177,6 +217,12 @@ export class Response implements ServerResponse {
   public getMaxListeners(): number { return this.original.getMaxListeners(); }
   public listeners(event: string | symbol): Function[] { return this.original.listeners(event); }
   public rawListeners(event: string | symbol): Function[] { return this.original.rawListeners(event); }
+  public emit(event: "close"): boolean;
+  public emit(event: "drain"): boolean;
+  public emit(event: "error", err: Error): boolean;
+  public emit(event: "finish"): boolean;
+  public emit(event: "pipe", src: Readable): boolean;
+  public emit(event: "unpipe", src: Readable): boolean;
   public emit(event: string | symbol, ...args: any[]): boolean {
     return this.original.emit(event, ...args);
   }
