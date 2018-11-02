@@ -3,6 +3,8 @@ import { Handler } from "../handler";
 import { RouteOptions } from "./route";
 import { Router } from ".";
 
+const verbs: VERBS[] = ["GET", "POST", "PUT", "DELETE", "PATCH", "HEAD", "OPTIONS"];
+
 export abstract class RouteDelegate {
   public abstract router: Router;
 
@@ -36,5 +38,11 @@ export abstract class RouteDelegate {
 
   public options(path: string, handler: Handler, options: RouteOptions = {}): void {
     this.router.options(path, handler, options);
+  }
+
+  public all(path: string, handler: Handler, options: RouteOptions = {}): void {
+    verbs.forEach((method) => {
+      this.router.match(method, path, handler, options);
+    });
   }
 }

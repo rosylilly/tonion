@@ -35,6 +35,7 @@ export class Application implements RouteDelegate {
   public delete = RouteDelegate.prototype.delete;
   public head = RouteDelegate.prototype.head;
   public options = RouteDelegate.prototype.options;
+  public all = RouteDelegate.prototype.all;
 
   private composedHandler?: Middleware;
 
