@@ -1,7 +1,7 @@
 module.exports = {
   mode: "file",
   target: "ES5",
-  out: "./docs",
+  out: "./doc",
   theme: "minimal",
   excludeNotExported: true,
   excludePrivate: true,
