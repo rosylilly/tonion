@@ -1,4 +1,6 @@
 import { createServer, Server, IncomingMessage, ServerResponse } from "http";
+import onFinished from "on-finished";
+
 import { Context } from "./context";
 import { Request } from "./request";
 import { Response } from "./response";
@@ -57,7 +59,19 @@ export class Application implements RouteDelegate {
       this.composedHandler = this.composeMiddleres();
     }
 
-    this.composedHandler.call(context, this.notFound);
+    const onError = (err?: any) => { context.onError(err); };
+    const respond = this.respond.bind(this, context);
+
+    onFinished(response, onError);
+    this.composedHandler.call(context, this.notFound).then(respond).catch(onError);
+  }
+
+  public async respond(ctx: Context) {
+    const { res } = ctx;
+
+    if (!res.writable) { return; }
+
+    res.end(res.body);
   }
 
   public getConnections(): Promise<number> {

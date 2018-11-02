@@ -2,6 +2,7 @@ import { Application } from "./application";
 import { Request } from "./request";
 import { Response } from "./response";
 import { format } from "util";
+import statuses from "statuses";
 
 export class Context {
   public app: Application;
@@ -24,8 +25,24 @@ export class Context {
     if (!(error instanceof Error)) {
       error = new Error(format("Error: %j", error));
     }
+    const { res } = this;
 
-    const msg = error.message;
-    this.res.end(msg);
+    if (res.headersSent) { return; }
+
+    res.getHeaderNames().forEach((key) => {
+      res.remove(key);
+    });
+
+    res.type = "text";
+    if (error.headers) { res.set(error.headers); }
+
+    if (error.code === "ENOENT") { error.status = 404; }
+    if (typeof error.status !== "number" || !statuses[error.status]) { error.status = 500; }
+
+    const statusMessage = statuses[error.status];
+    const message = error.expose ?  error.message : statusMessage;
+    res.statusCode = error.status;
+    res.length = Buffer.byteLength(message);
+    res.end(message);
   }
 }

@@ -1,7 +1,8 @@
 import { ServerResponse, OutgoingHttpHeaders } from "http";
-import { Header } from "./header";
+import mimeTypes from "mime-types";
 import { Socket } from "net";
 import { Readable } from "stream";
+import { Header } from "./header";
 
 type CallbackHandler = () => void;
 type ErrorHandler = (error: Error | null | undefined) => void;
@@ -19,12 +20,43 @@ export class Response implements ServerResponse {
     return this.getHeader(key);
   }
 
-  public set(key: string, value: number | string | string[]) {
-    this.setHeader(key, value);
+  public set(key: string, value: number | string | string[]): void;
+  public set(fields: Header): void;
+  public set(fieldsOrKey: string | Header, value?: number | string | string[]) {
+    if (typeof fieldsOrKey === "string") {
+      if (value) { this.setHeader(fieldsOrKey, value); }
+      return;
+    }
+
+    for (const key of fieldsOrKey) {
+      this.setHeader(key, fieldsOrKey[key]);
+    }
   }
 
-  public remove(key: string) {
-    this.removeHeader(key);
+  public remove(...keys: string[]) {
+    keys.forEach((key) => {
+      this.removeHeader(key);
+    });
+  }
+
+  public get type(): string {
+    const type = this.get("Content-Type");
+    if (!type) { return ""; }
+
+    return type.toString().split(";")[0];
+  }
+  public set type(type: string) {
+    const lookuped = mimeTypes.lookup(type);
+
+    if (lookuped) {
+      this.set("Content-Type", lookuped);
+    } else {
+      this.remove("Content-Type");
+    }
+  }
+
+  public set length(num: number) {
+    this.set("Content-Length", num);
   }
 
   public send(status: number): void;
@@ -50,7 +82,7 @@ export class Response implements ServerResponse {
       status = 204;
       this.remove("Content-Length");
     } else {
-      this.set("Content-Length", body.length);
+      this.length = body.byteLength;
     }
 
     this.body = body;
