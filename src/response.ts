@@ -27,9 +27,14 @@ export class Response implements ServerResponse {
     this.removeHeader(key);
   }
 
+  public send(status: number): void;
   public send(status: number, body: string, headers?: Header): void;
   public send(status: number, body: Buffer, headers?: Header): void;
-  public send(status: number, body: string | Buffer, headers?: Header) {
+  public send(status: number, body?: string | Buffer, headers?: Header) {
+    if (!body) {
+      body = "";
+    }
+
     if (typeof body === "string") {
       body = Buffer.from(body);
     }
@@ -48,7 +53,7 @@ export class Response implements ServerResponse {
       this.set("Content-Length", body.length);
     }
 
-    this.write(body);
+    this.body = body;
   }
 
   // Server Response
