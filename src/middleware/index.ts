@@ -1,7 +1,9 @@
-import { Context } from "../context";
+import { Middleware } from "./middleware";
+import { NextFunction } from "./next_function";
+import { compose } from "./compose";
 
-export type NextFunction = (context: Context) => Promise<any>;
-
-export abstract class Middleware {
-  public abstract async call(context: Context, next: NextFunction): Promise<void>;
-}
+export {
+  Middleware,
+  NextFunction,
+  compose,
+};

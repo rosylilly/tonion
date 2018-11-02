@@ -27,7 +27,7 @@ export class Router implements Middleware {
       path = URL.pathname;
     }
 
-    const handler = this.resolve(req.method, path, context);
+    const handler = this.resolve(req.method || "", path, context);
     if (handler instanceof Middleware) {
       return await handler.call(context, next);
     } else if (handler) {

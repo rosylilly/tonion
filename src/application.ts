@@ -3,37 +3,8 @@ import { Context } from "./context";
 import { Request } from "./request";
 import { Response } from "./response";
 import { Router } from "./router";
-import { NextFunction, Middleware } from "./middleware";
+import { NextFunction, Middleware, compose } from "./middleware";
 import { RouteDelegate } from "./router/route_delegate";
-
-export const compose = (...middlewares: Middleware[]) => {
-  return {
-    call: async (context: Context, next: NextFunction) => {
-      let index = -1;
-
-      const call = (i: number) => {
-        if (i <= index) { return Promise.reject(new Error("next() called multiple times")); }
-        index = i;
-
-        const middleware = middlewares[i];
-        let resolver: Promise<void>;
-        if (!middleware) {
-          resolver = next(context);
-        } else {
-          resolver = middleware.call(context, call.bind(null, i + 1));
-        }
-
-        try {
-          return Promise.resolve(resolver);
-        } catch (error) {
-          return Promise.reject(error);
-        }
-      };
-
-      return call(0);
-    },
-  };
-};
 
 export class Application implements RouteDelegate {
   public set keepAliveTimeout(ms: number) { this.server.keepAliveTimeout = ms; }

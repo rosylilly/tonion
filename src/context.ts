@@ -24,5 +24,8 @@ export class Context {
     if (!(error instanceof Error)) {
       error = new Error(format("Error: %j", error));
     }
+
+    const msg = error.message;
+    this.res.end(msg);
   }
 }

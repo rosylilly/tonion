@@ -1,4 +1,5 @@
-import { Middleware, NextFunction } from ".";
+import { Middleware } from "./middleware";
+import { NextFunction } from "./next_function";
 import { IncomingMessage, ServerResponse } from "http";
 import { Context } from "../context";
 
@@ -6,7 +7,7 @@ type ExpressNextFunction = (err?: any) => void;
 type ExpressMiddlewareFunction = (req: IncomingMessage, res: ServerResponse, next: ExpressNextFunction) => void;
 
 export class ExpressMiddleware implements Middleware {
-  public fn: ExpressMiddlewareFunction;
+  private fn: ExpressMiddlewareFunction;
 
   constructor(fn: ExpressMiddlewareFunction) {
     this.fn = fn;
