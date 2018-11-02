@@ -3,6 +3,7 @@ import { Request } from "./request";
 import { Response } from "./response";
 import { format } from "util";
 import statuses from "statuses";
+import createHttpError, { HttpError } from "http-errors";
 
 export class Context {
   public app: Application;
@@ -18,6 +19,24 @@ export class Context {
 
   public get req(): Request { return this.request; }
   public get res(): Response { return this.response; }
+
+  public throw(status: number): void;
+  public throw(status: number, message: string): void;
+  public throw(status: number, error: Error): void;
+  public throw(status: number, message: string, props: any): void;
+  public throw(status: number, reason?: string | Error, props?: any) {
+    let err: HttpError;
+    if (reason) {
+      if (props) {
+        err = createHttpError(status, reason, props);
+      } else {
+        err = createHttpError(status, reason);
+      }
+    } else {
+      err = createHttpError(status);
+    }
+    throw err;
+  }
 
   public onError(error?: any) {
     if (!error) { return; }
