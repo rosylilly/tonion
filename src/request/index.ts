@@ -37,6 +37,11 @@ export class Request extends RequestDelegate {
     }
   }
 
+  public get pathname(): string {
+    const url = this.URL;
+    return url ? url.pathname : "/";
+  }
+
   public get(key: string): string {
     key = key.toLowerCase();
 

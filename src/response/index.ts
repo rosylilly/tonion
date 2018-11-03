@@ -80,6 +80,8 @@ export class Response extends ResponseDelegate {
       this.length = body.byteLength;
     }
 
+    this.statusCode = status;
     this.body = body;
+    this.end(this.body);
   }
 }

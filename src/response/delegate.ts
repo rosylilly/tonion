@@ -53,7 +53,7 @@ export abstract class ResponseDelegate implements ServerResponse {
   }
   public setDefaultEncoding(encoding: string): this { this.original.setDefaultEncoding(encoding); return this; }
   public end(
-    srcOrCallback: string | Buffer | CallbackHandler | undefined,
+    srcOrCallback?: string | Buffer | CallbackHandler,
     encodingOrCallback?: string | CallbackHandler,
     cb?: CallbackHandler,
   ): void {

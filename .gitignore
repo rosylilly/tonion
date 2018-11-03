@@ -4,3 +4,5 @@ lib
 doc
 yarn-error.log
 example/yarn.lock
+.nyc_output
+coverage

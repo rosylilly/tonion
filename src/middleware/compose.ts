@@ -1,8 +1,8 @@
-import { Middleware } from "./middleware";
 import { NextFunction } from "./next_function";
 import { Context } from "../context";
+import { Handler } from "../handler";
 
-export const compose = (...middlewares: Middleware[]) => {
+export const compose = (...middlewares: Handler[]) => {
   return {
     call: async (context: Context, next: NextFunction) => {
       let index = -1;
@@ -15,6 +15,8 @@ export const compose = (...middlewares: Middleware[]) => {
         let resolver: Promise<void>;
         if (!middleware) {
           resolver = next(context);
+        } else if (typeof middleware === "function") {
+          resolver = middleware(context, call.bind(null, i + 1));
         } else {
           resolver = middleware.call(context, call.bind(null, i + 1));
         }

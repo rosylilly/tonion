@@ -46,7 +46,14 @@ export class Context {
     }
     const { res } = this;
 
-    if (res.headersSent) { return; }
+    let headerSent = false;
+    if (res.headersSent || !res.writable) {
+      headerSent = error.headerSent = true;
+    }
+
+    this.app.emit("error", error);
+
+    if (headerSent) { return; }
 
     res.getHeaderNames().forEach((key) => {
       res.remove(key);
@@ -60,8 +67,6 @@ export class Context {
 
     const statusMessage = statuses[error.status];
     const message = error.expose ?  error.message : statusMessage;
-    res.statusCode = error.status;
-    res.length = Buffer.byteLength(message);
-    res.end(message);
+    res.send(error.status, message);
   }
 }

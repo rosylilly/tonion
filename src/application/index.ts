@@ -1,30 +1,20 @@
 import { createServer, Server, IncomingMessage, ServerResponse } from "http";
 import onFinished from "on-finished";
 
-import { Context } from "./context";
-import { Request } from "./request";
-import { Response } from "./response";
-import { Router } from "./router";
-import { NextFunction, Middleware, compose } from "./middleware";
-import { RouteDelegate } from "./router/route_delegate";
+import { Context } from "../context";
+import { Request } from "../request";
+import { Response } from "../response";
+import { Router } from "../router";
+import { NextFunction, Middleware, compose } from "../middleware";
+import { RouteDelegate } from "../router/route_delegate";
+import { ServerDelegate } from "./delegate";
+import { Handler } from "../handler";
 
-export class Application implements RouteDelegate {
-  public set keepAliveTimeout(ms: number) { this.server.keepAliveTimeout = ms; }
-  public get keepAliveTimeout(): number { return this.server.keepAliveTimeout; }
-  public set maxConnections(count: number) { this.server.maxConnections = count; }
-  public get maxConnections(): number { return this.server.maxConnections; }
-  public set maxHeadersCount(count: number) { this.server.maxHeadersCount = count; }
-  public get maxHeadersCount(): number { return this.server.maxHeadersCount; }
-  public set timeout(ms: number) { this.server.timeout = ms; }
-  public get timeout(): number { return this.server.timeout; }
-
-  public get listening(): boolean { return this.server.listening; }
-
+export class Application extends ServerDelegate implements RouteDelegate {
   public env: string;
   public router: Router;
-  public server: Server;
 
-  public middlewares: Middleware[] = [];
+  public middlewares: Handler[] = [];
   public notFound: NextFunction;
 
   public match = RouteDelegate.prototype.match;
@@ -37,28 +27,34 @@ export class Application implements RouteDelegate {
   public options = RouteDelegate.prototype.options;
   public all = RouteDelegate.prototype.all;
 
-  private composedHandler?: Middleware;
+  protected server: Server;
+
+  private composedHandler: Middleware;
 
   constructor() {
+    super();
+
     this.env = process.env.NODE_ENV || "development";
     this.router = new Router();
 
     const handler = this.handler.bind(this);
     this.server = createServer(handler);
+    this.composedHandler = this.composeMiddleres();
 
     this.notFound = async (context: Context) => {
-      context.res.send(404, "404 Not Found");
+      context.res.send(404, `404 Not Found: ${context.req.pathname}`);
     };
+  }
+
+  public use(middleware: Handler) {
+    this.middlewares.push(middleware);
+    this.composedHandler = this.composeMiddleres();
   }
 
   public handler(req: IncomingMessage, res: ServerResponse): void {
     const request = new Request(req);
     const response = new Response(res);
     const context = new Context(this, request, response);
-
-    if (!this.composedHandler) {
-      this.composedHandler = this.composeMiddleres();
-    }
 
     const onError = (err?: any) => { context.onError(err); };
     const respond = this.respond.bind(this, context);
@@ -85,13 +81,10 @@ export class Application implements RouteDelegate {
     });
   }
 
-  public listen(port: number) {
-    this.composeMiddleres();
-    return this.server.listen(port);
-  }
-
-  public close(callback?: () => void) {
-    this.server.close(callback);
+  public listen(...args: any[]): this {
+    this.composedHandler = this.composeMiddleres();
+    this.server.listen(...args);
+    return this;
   }
 
   private composeMiddleres(): Middleware {
