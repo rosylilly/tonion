@@ -15,17 +15,8 @@ export abstract class ServerDelegate implements Server {
   public set keepAliveTimeout(ms: number) { this.server.keepAliveTimeout = ms; }
   // for supertest
   public get _handle(): any { return (this.server as any)._handle; }
-
-  public setTimeout(msecs?: number | CallbackHandler, callback?: CallbackHandler): this {
-    if (typeof msecs === "number") {
-      this.server.setTimeout(msecs, callback);
-    } else if (msecs) {
-      this.server.setTimeout(msecs);
-    } else {
-      this.server.setTimeout();
-    }
-    return this;
-  }
+  public setTimeout(msecs?: number | CallbackHandler, callback?: CallbackHandler): this;
+  public setTimeout(...args: any[]): this { this.server.setTimeout(...args); return this; }
 
   // net.Server
   public get maxConnections(): number { return this.server.maxConnections; }
@@ -49,24 +40,11 @@ export abstract class ServerDelegate implements Server {
     return this;
   }
 
-  public close(callback?: Function): this {
-    this.server.close(callback);
-    return this;
-  }
-  public address(): AddressInfo | string {
-    return this.server.address();
-  }
-  public getConnections(cb: (error: Error | null, count: number) => void): void {
-    this.getConnections(cb);
-  }
-  public ref(): this {
-   this.server.ref();
-   return this;
-  }
-  public unref(): this {
-    this.server.unref();
-    return this;
-  }
+  public close(callback?: Function): this { this.server.close(callback); return this; }
+  public address(): AddressInfo | string { return this.server.address(); }
+  public getConnections(cb: (error: Error | null, count: number) => void): void { this.getConnections(cb); }
+  public ref(): this { this.server.ref(); return this; }
+  public unref(): this { this.server.unref(); return this; }
 
   // EventEmitter
   public addListener(event: "close", listener: () => void): this;
