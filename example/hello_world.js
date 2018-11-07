@@ -2,15 +2,15 @@ const { Application } = require("tonion");
 
 const app = new Application();
 
-app.get("/", (context) => {
+app.get("/", async (context) => {
   context.res.send(200, "Hello, World!\n");
 });
 
-app.get("/hello/<name>", (context) => {
+app.get("/hello/<name>", async (context) => {
   context.res.send(200, `Hello, ${context.params.name}!\n`);
 })
 
-app.get("/test", (context) => {
+app.get("/test", async (context) => {
   context.throw(404);
 });
 
