@@ -64,9 +64,13 @@ export class Application extends ServerDelegate implements RouteDelegate {
   }
 
   public async respond(ctx: Context) {
-    const { res } = ctx;
+    const { req, res } = ctx;
 
     if (!res.writable) { return; }
+
+    if (req.method === "HEAD" && !res.headersSent) {
+      return res.send(204, "");
+    }
 
     res.end(res.body);
   }

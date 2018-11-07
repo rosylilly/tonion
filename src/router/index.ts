@@ -104,7 +104,7 @@ export class Router implements Middleware {
         case NORMAL_PARAM_OPEN:
           staticPath = path.slice(0, i);
           if (staticPath.length > 0) {
-            if (this.caseSensitive) {
+            if (!this.caseSensitive) {
               staticPath = staticPath.toLowerCase();
             }
 

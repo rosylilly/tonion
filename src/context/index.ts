@@ -1,6 +1,6 @@
-import { Application } from "./application";
-import { Request } from "./request";
-import { Response } from "./response";
+import { Application } from "../application";
+import { Request } from "../request";
+import { Response } from "../response";
 import { format } from "util";
 import statuses from "statuses";
 import createHttpError, { HttpError } from "http-errors";
