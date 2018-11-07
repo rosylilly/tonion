@@ -17,7 +17,10 @@
       "src/**/*.ts"
     ],
     "exclude": [
-      "**/*.d.ts"
+      "**/*.d.ts",
+      "src/application/delegate.ts",
+      "src/request/delegate.ts",
+      "src/response/delegate.ts"
     ],
     "extension": [
       ".ts"
